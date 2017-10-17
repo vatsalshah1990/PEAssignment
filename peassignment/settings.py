@@ -9,23 +9,36 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-
+import logging
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Setup logging
+
+logger = logging.getLogger('settings')
+
+# Get the application environment
+
+APP_ENV = os.environ['APP_ENV']
+logger.info("Application Environment: {}".format(APP_ENV))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'q6@1ch(d#x(i0@-o-jqm+(e34*%+!2*p@pe$=-(iftipn(z+dw'
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+if APP_ENV == "PROD":
+    DEBUG = False
+
+logger.info("DEBUG: {}".format(DEBUG))
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,7 +50,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'core.apps.CoreConfig',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'allauth',
+    'allauth.account',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +71,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'peassignment.urls'
+
+# Custom user model
+AUTH_USER_MODEL = 'core.User'
 
 TEMPLATES = [
     {
@@ -77,10 +100,18 @@ WSGI_APPLICATION = 'peassignment.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': "django.db.backends.postgresql_psycopg2",
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
     }
 }
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Password validation
@@ -107,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -120,3 +151,97 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+# CORS Configuration
+CORS_ORIGIN_ALLOW_ALL = True
+if APP_ENV == "PROD":
+    CORS_ORIGIN_ALLOW_ALL = False
+    CORS_ORIGIN_WHITELIST = (
+    )
+
+
+# Django REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter'
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+# allauth settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# Rest Auth Settings
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'core.serializers.UserDetailsSerializer'
+}
+
+# Log settings
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue'
+        }
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'info_console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'error_console': {
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'null': {
+            "class": 'logging.NullHandler',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['error_console', 'mail_admins'],
+        },
+        'settings': {
+            'handlers': ['error_console', 'mail_admins'],
+        },
+        'py.warnings': {
+            'handlers': ['info_console'],
+        },
+    }
+}
