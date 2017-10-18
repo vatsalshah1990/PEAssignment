@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rest_auth',
     'allauth',
     'allauth.account',
+    'phonenumber_field'
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,9 @@ ROOT_URLCONF = 'peassignment.urls'
 
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
+
+# Phone number settings
+PHONENUMBER_DB_FORMAT = 'E164'
 
 TEMPLATES = [
     {

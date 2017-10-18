@@ -2,6 +2,7 @@ from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.mail import send_mail
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 __author__ = 'vatsalshah'
 
@@ -71,11 +72,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         default='PA',
         choices=USER_TYPES
     )
+    phone = PhoneNumberField()
 
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name', 'phone']
 
     class Meta:
         ordering = ["created_at"]
@@ -98,3 +100,91 @@ class User(AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class MedicalRecord(models.Model):
+    """
+    User Medical Records
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    user = models.ForeignKey(
+        to=User,
+        related_name='medicalrecord_user'
+    )
+    doctor = models.ForeignKey(
+        to=User,
+        related_name='medicalrecord_doctor'
+    )
+    diagnosis = models.TextField(blank=True)
+
+
+class Prescription(models.Model):
+    """
+    Medicine Prescription
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    user = models.ForeignKey(
+        to=User,
+        related_name='prescription_user'
+    )
+    doctor = models.ForeignKey(
+        to=User,
+        related_name='prescription_doctor'
+    )
+
+
+class Medicine(models.Model):
+    """
+    Medicine
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    name = models.CharField(max_length=100)
+    qty = models.IntegerField()
+    strength = models.IntegerField()
+    frequency = models.CharField(max_length=50)
+    prescription = models.ForeignKey(
+        to=Prescription
+    )
+
+
+class Approval(models.Model):
+    """
+    Approvals
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+    prescription = models.ForeignKey(
+        to=Prescription
+    )
+    user = models.ForeignKey(
+        to=User
+    )
+    STATUS_TYPES = (
+        ('PE', 'Pending'),
+        ('RE', 'Rejected'),
+        ('AP', 'Approved')
+    )
+    status = models.CharField(
+        max_length=2,
+        default='PE',
+        choices=STATUS_TYPES
+    )
