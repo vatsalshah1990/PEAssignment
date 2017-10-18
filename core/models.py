@@ -161,6 +161,11 @@ class Prescription(models.Model):
         to=User,
         related_name='prescription_doctor'
     )
+    medical_record = models.ForeignKey(
+        to=MedicalRecord,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return self.user.email
