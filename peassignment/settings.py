@@ -19,6 +19,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 logger = logging.getLogger('settings')
 
+# Set application name
+
+SITE_ID = 1
+APPLICATION_NAME = "peassignment.com"
+
 # Get the application environment
 
 APP_ENV = os.environ['APP_ENV']
@@ -39,7 +44,6 @@ if APP_ENV == "PROD":
 logger.info("DEBUG: {}".format(DEBUG))
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -76,6 +80,8 @@ ROOT_URLCONF = 'peassignment.urls'
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
 
+LOGIN_REDIRECT_URL = '/'  # It means home view
+
 # Phone number settings
 PHONENUMBER_DB_FORMAT = 'E164'
 
@@ -98,7 +104,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'peassignment.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -116,7 +121,6 @@ DATABASES = {
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -136,7 +140,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -149,7 +152,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -167,7 +169,6 @@ if APP_ENV == "PROD":
     CORS_ORIGIN_ALLOW_ALL = False
     CORS_ORIGIN_WHITELIST = (
     )
-
 
 # Django REST Framework settings
 REST_FRAMEWORK = {

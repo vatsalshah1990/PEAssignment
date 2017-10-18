@@ -16,6 +16,13 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 
+from core.forms import LoginForm
+from core.views import home
+from django.contrib.auth import views
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', home, name='home'),
+    url(r'^login/$', views.login, {'template_name': 'login.html', 'authentication_form': LoginForm}, name='login'),
+    url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout'),
 ]
