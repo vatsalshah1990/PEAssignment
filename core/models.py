@@ -79,6 +79,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     phone = PhoneNumberField()
 
+    is_staff = models.BooleanField(
+        default=False,
+        help_text='Designates whether the user can log into this admin site.'
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text='Designates whether this user should be treated as active.'
+    )
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -106,6 +115,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
+    def __str__(self):
+        return self.email
+
 
 class MedicalRecord(models.Model):
     """
@@ -127,6 +139,9 @@ class MedicalRecord(models.Model):
     )
     diagnosis = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.user.email
+
 
 class Prescription(models.Model):
     """
@@ -147,6 +162,9 @@ class Prescription(models.Model):
         related_name='prescription_doctor'
     )
 
+    def __str__(self):
+        return self.user.email
+
 
 class Medicine(models.Model):
     """
@@ -165,6 +183,9 @@ class Medicine(models.Model):
     prescription = models.ForeignKey(
         to=Prescription
     )
+
+    def __str__(self):
+        return self.name
 
 
 class Approval(models.Model):
@@ -193,3 +214,6 @@ class Approval(models.Model):
         default='PE',
         choices=STATUS_TYPES
     )
+
+    def __str__(self):
+        return self.user.email
