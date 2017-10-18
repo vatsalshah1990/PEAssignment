@@ -8,7 +8,7 @@ __author__ = 'vatsalshah'
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, password=None):
+    def create_user(self, email, name, phone, user_type, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -19,20 +19,24 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             name=name,
+            phone=phone,
+            user_type=user_type
         )
 
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, password):
+    def create_superuser(self, email, name, phone, password):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
         user = self.create_user(email,
                                 password=password,
-                                name=name
+                                name=name,
+                                phone=phone,
+                                user_type='NA'
                                 )
         user.is_staff = True
         user.is_superuser = True
@@ -64,7 +68,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     USER_TYPES = (
         ('PA', 'Patient'),
         ('DO', 'Doctor'),
-        ('PH', 'Pharmacist')
+        ('PH', 'Pharmacist'),
+        ('NA', 'Not Applicable')
     )
     user_type = models.CharField(
         verbose_name='user type',
