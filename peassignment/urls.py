@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 
 from core.forms import LoginForm
-from core.views import home, PrescriptionDetailView, MedicalRecordDetailView
+from core.views import home, PrescriptionDetailView, MedicalRecordDetailView, patient_approve, approval_create
 from django.contrib.auth import views
 
 urlpatterns = [
@@ -28,4 +28,6 @@ urlpatterns = [
     url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout'),
     url(r'^prescription/(?P<pk>[0-9]+)/$', login_required(PrescriptionDetailView.as_view()), name='prescription-detail'),
     url(r'^medicalrecord/(?P<pk>[0-9]+)/$', login_required(MedicalRecordDetailView.as_view()), name='medicalrecord-detail'),
+    url(r'^approval/(?P<pk>[0-9]+)/$', patient_approve, name='patient_approve'),
+    url(r'^approval/$', approval_create, name='approval_create'),
 ]

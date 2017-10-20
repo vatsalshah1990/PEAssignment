@@ -5,14 +5,66 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron">
-            <h2>Prescriptions</h2>
-            <ul>
-            {% for prescription in user.prescription_user.all %}
-                <li><a href="{{ prescription.get_absolute_url }}">Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</a></li>
-            {% empty %}
-                <li>Sorry, no prescriptions available.</li>
-            {% endfor %}
-            </ul>
+            {% if user.user_type == "PA" %}
+                <h2>Your Prescriptions</h2>
+                <ul>
+                {% for prescription in user.prescription_user.all %}
+                    <li><a href="{{ prescription.get_absolute_url }}">Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</a></li>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                </ul>
+                <span></span>
+                <h2>Pending Approvals</h2>
+                <ul>
+                {% for approval in pending_approvals %}
+                    <li>User type: {{ approval.user.get_user_type_display }}, User name: {{ approval.user.name }}, Prescription Date: {{ approval.prescription.created_at|date:"SHORT_DATE_FORMAT" }} <button type="submit"><a href="{% url 'patient_approve' approval.id %}">Approve</a></button></li>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <h2>Approved Patient Prescriptions</h2>
+                <ul>
+                {% for prescription in approved_prescriptions %}
+                    <li><a href="{{ prescription.get_absolute_url }}">Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</a></li>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                <span></span>
+                <h2>Pending Patient Approval Prescriptions</h2>
+                <ul>
+                {% for prescription in pending_prescriptions %}
+                    <li>Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</li>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                </ul>
+                <span></span>
+                <h2>Available Prescriptions - Needs Approval</h2>
+                <ul>
+                {% for prescription in available_prescriptions %}
+                    <li>Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</li>
+                    <form action="{% url 'approval_create' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="user" value="{{ user.pk }}">
+                    <input type="hidden" name="prescription" value="{{ prescription.pk }}">
+                    <input type="submit" value="Ask for approval">
+                    </form>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                </ul>
+                <span></span>
+                <h2>Rejected Patient Approval Prescriptions</h2>
+                <ul>
+                {% for prescription in rejected_prescriptions %}
+                    <li>Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</li>
+                {% empty %}
+                    <li>Sorry, no prescriptions available.</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </div>
     </div>
 </div>
