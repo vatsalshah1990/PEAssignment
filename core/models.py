@@ -140,7 +140,11 @@ class MedicalRecord(models.Model):
     diagnosis = models.TextField(blank=True)
 
     def __str__(self):
-        return self.user.email
+        return "Doctor: {}, User: {}, Diagnosis: {}".format(self.doctor.name, self.user.name, self.diagnosis)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('medicalrecord-detail', args=[str(self.id)])
 
 
 class Prescription(models.Model):
@@ -169,6 +173,10 @@ class Prescription(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('prescription-detail', args=[str(self.id)])
 
 
 class Medicine(models.Model):

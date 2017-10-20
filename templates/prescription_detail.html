@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="jumbotron">
+            <p>Patient name: {{ object.user.name }}</p>
+            <p>Doctor name: {{ object.doctor.name }}</p>
+            <p>Date: {{ object.created_at|date:"SHORT_DATE_FORMAT" }}</p>
+            {% if  object.medical_record %}
+            <a href="{{ object.medical_record.get_absolute_url }}">Medical Record</a>
+            {% endif %}
+            <span></span>
+
+            {% for medicine in object.medicine_set.all %}
+                <ul class="list-unstyled">
+                <li>Name: {{ medicine.name }}</li>
+                <li>Qty: {{ medicine.qty }}</li>
+                <li>Strength: {{ medicine.strength }}</li>
+                <li>Frequency: {{ medicine.frequency }}</li>
+                <li></li>
+                </ul>
+            {% empty %}
+                <ul class="list-unstyled">
+                <li>Sorry, no medicines prescribed.</li>
+                </ul>
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

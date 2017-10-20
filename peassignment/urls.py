@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 
 from core.forms import LoginForm
-from core.views import home
+from core.views import home, PrescriptionDetailView, MedicalRecordDetailView
 from django.contrib.auth import views
 
 urlpatterns = [
@@ -25,4 +26,6 @@ urlpatterns = [
     url(r'^$', home, name='home'),
     url(r'^login/$', views.login, {'template_name': 'login.html', 'authentication_form': LoginForm}, name='login'),
     url(r'^logout/$', views.logout, {'next_page': '/login'}, name='logout'),
+    url(r'^prescription/(?P<pk>[0-9]+)/$', login_required(PrescriptionDetailView.as_view()), name='prescription-detail'),
+    url(r'^medicalrecord/(?P<pk>[0-9]+)/$', login_required(MedicalRecordDetailView.as_view()), name='medicalrecord-detail'),
 ]

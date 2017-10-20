@@ -5,8 +5,14 @@
 <div class="container">
     <div class="row">
         <div class="jumbotron">
-            <h1>Hello</h1>
-            <p>You are on your Dashboard</p>
+            <h2>Prescriptions</h2>
+            <ul>
+            {% for prescription in user.prescription_user.all %}
+                <li><a href="{{ prescription.get_absolute_url }}">Patient name: {{ prescription.user.name }}, Doctor: {{ prescription.doctor.name }}, Date: {{ prescription.created_at|date:"SHORT_DATE_FORMAT" }}</a></li>
+            {% empty %}
+                <li>Sorry, no prescriptions available.</li>
+            {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
