@@ -12,6 +12,8 @@ Setup Instructions
 6. Run server: python manage.py runserver <port>
 7. Access admin and create some entries for each data model.
 
+Note: Environment setting has been kept at DEV for easy discovery of bugs. However, will be turned off with APP_ENV set to PROD.
+
 Shortcomings of the project due to time constraint:
 1. Security of detail pages. Detail pages are accesible without necessary permissions if the url is known.
 2. User, Prescription and medical records need to be currently created by the admin panel. This could've been implmeneted with the frontend which would have enabled necessary filtering. For e.g.: Anyone can create prescriptions currently. Only doctors should be able to in ideal case. However, the moto of the project was approvals flow. Hence, this was ignored.
