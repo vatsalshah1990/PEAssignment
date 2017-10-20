@@ -33,6 +33,16 @@ User accounts created:
 4. messi@barcelona.com - Doctor
 5. suarez@barcelona.com - Pharmacist
 
+Note: Email and Passwords for all the accounts are kept identical for ease.
+
+For e.g. to login as Patient - Iniesta:
+Email: iniesta@barcelona.com
+Password: iniesta@barcelona.com
+
 A couple of prescriptions and medical records are created with different statuses for illustration purpose. Please feel free to create more users and prescriptions through the admin panel for further testing.
 
 URLS:
+Frontend --> http://35.154.236.204
+Admin --> http://35.154.236.204/admin/
+
+Please use the frontend to logout/login with each of the account types to check the approval flow!
